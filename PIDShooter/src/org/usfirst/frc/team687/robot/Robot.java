@@ -1,9 +1,10 @@
 
 package org.usfirst.frc.team687.robot;
 
-import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.CANTalon;
+import edu.wpi.first.wpilibj.CANTalon.FeedbackDevice;
+import edu.wpi.first.wpilibj.CANTalon.TalonControlMode;
 import edu.wpi.first.wpilibj.Joystick;
 
 /**
@@ -38,7 +39,7 @@ public class Robot extends IterativeRobot {
         shooter.configNominalOutputVoltage(0, 0);
         shooter.configPeakOutputVoltage(12, 0);	//Don't ever spin the motor backwards
 		
-		shooter.setBrakeMode(false); // Let's not destroy the motor
+		shooter.enableBrakeMode(false); // Let's not destroy the motor
 		
 		shooter.setPID(kP, kI, kD);
 		shooter.changeControlMode(TalonControlMode.Speed);
