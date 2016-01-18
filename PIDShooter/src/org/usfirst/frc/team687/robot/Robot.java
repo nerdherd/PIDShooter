@@ -2,10 +2,18 @@
 package org.usfirst.frc.team687.robot;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.CANTalon.FeedbackDevice;
 import edu.wpi.first.wpilibj.CANTalon.TalonControlMode;
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.PowerDistributionPanel;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -21,16 +29,33 @@ public class Robot extends IterativeRobot {
 	double kI = 0;
 	double kD = 0;
 	
+	double current;
+	double rpm;
+	double voltage;
+	long startTime;
+	long time;
+	
+	Encoder enc;
 	CANTalon shooter;
 	Joystick joy;
+	PowerDistributionPanel pdp;
+	FileWriter fw;
+	File csv;
 	
     /**
      * This function is run when the robot is first started up and should be
      * used for any initialization code.
      */
     public void robotInit() {
+    	startTime = System.currentTimeMillis();
 		shooter = new CANTalon(1);
 		
+		csv = new File("data.csv");
+		try {
+			fw = new FileWriter(csv);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		//Pick the right sensor
 		shooter.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Relative);
 		shooter.reverseSensor(false);
@@ -45,6 +70,7 @@ public class Robot extends IterativeRobot {
 		shooter.changeControlMode(TalonControlMode.Speed);
 		
 		joy = new Joystick(0);
+		
     }
 	
     /**
@@ -63,6 +89,33 @@ public class Robot extends IterativeRobot {
 		}	else	{
 			shooter.set(0);
 		}
+    	current = pdp.getCurrent(1);
+    	time = System.currentTimeMillis()-startTime;
+    	rpm = enc.getRate();
+    	voltage = pdp.getVoltage();
+    	
+    	if (joy.getRawButton(7)) {
+    		kP += 0.1;
+    	}
+    	if (joy.getRawButton(8)) {
+    		kP -= 0.1;
+    	}
+    	if (joy.getRawButton(9)) {
+    		kI += 0.1;
+    	}
+    	if (joy.getRawButton(10)) {
+    		kI -= 0.1;
+    	}
+    	if (joy.getRawButton(11)) {
+    		kD += 0.1;
+    	}
+    	if (joy.getRawButton(12)) {
+    		kD -= 0.1;
+    	}
+    	SmartDashboard.putNumber("kP", kP);
+    	SmartDashboard.putNumber("kI", kI);
+    	SmartDashboard.putNumber("kD", kD);
+    	
     }
     
     /**
