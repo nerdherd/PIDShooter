@@ -3,7 +3,8 @@ package org.usfirst.frc.team687.robot;
 
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.IterativeRobot;
-import edu.wpi.first.wpilibj.Talon;
+import edu.wpi.first.wpilibj.CANTalon;
+import edu.wpi.first.wpilibj.Joystick;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -14,42 +15,37 @@ import edu.wpi.first.wpilibj.Talon;
  */
 public class Robot extends IterativeRobot {
 
-	private double m_kP = 0;
-	private double m_kI = 0;
-	private double m_kD = 0;
+	// Need to tune these values
+	double kP = 0;
+	double kI = 0;
+	double kD = 0;
 	
-	private double error;
-	private double speed;
-	private double current;
-	private double lastError = 0;
-	private double sumError = 0;
-	
-	private double desired = 6200;
-	
-	Encoder enc = new Encoder(0,1);
-	Talon shooter = new Talon(2);
+	CANTalon shooter;
+	Joystick joy;
 	
     /**
      * This function is run when the robot is first started up and should be
      * used for any initialization code.
      */
     public void robotInit() {
-
+		shooter = new CANTalon(1);
+		
+		//Pick the right sensor
+		shooter.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Relative);
+		shooter.reverseSensor(false);
+		
+		//Pick the voltage for no power/full power
+        shooter.configNominalOutputVoltage(0, 0);
+        shooter.configPeakOutputVoltage(12, 0);	//Don't ever spin the motor backwards
+		
+		shooter.setBrakeMode(false); // Let's not destroy the motor
+		
+		shooter.setPID(kP, kI, kD);
+		shooter.changeControlMode(TalonControlMode.Speed);
+		
+		joy = new Joystick(0);
     }
-    
-	/**
-	 * This autonomous (along with the chooser code above) shows how to select between different autonomous modes
-	 * using the dashboard. The sendable chooser code works with the Java SmartDashboard. If you prefer the LabVIEW
-	 * Dashboard, remove all of the chooser code and uncomment the getString line to get the auto name from the text box
-	 * below the Gyro
-	 *
-	 * You can add additional auto modes by adding additional comparisons to the switch structure below with additional strings.
-	 * If using the SendableChooser make sure to add them to the chooser code above as well.
-	 */
-    public void autonomousInit() {
-
-    }
-
+	
     /**
      * This function is called periodically during autonomous
      */
@@ -61,20 +57,11 @@ public class Robot extends IterativeRobot {
      * This function is called periodically during operator control
      */
     public void teleopPeriodic() {
-    	current = enc.getRate();
-    	error = desired - current;
-    	sumError += error;
-    	
-    	
-    	speed = m_kP*error + m_kI*sumError + m_kD*(error-lastError);
-    	if (speed > 1) {
-    		speed = 1;
-    	} else if (speed < -1) {
-    		speed = -1;
-    	}
-    	shooter.set(speed);
-    	
-    	lastError = error;
+    	if(joy.getRawButton(1))	{
+			shooter.set(6200); //Target speed is 6200 RPM
+		}	else	{
+			shooter.set(0);
+		}
     }
     
     /**
