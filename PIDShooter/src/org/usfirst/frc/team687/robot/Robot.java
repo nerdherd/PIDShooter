@@ -116,6 +116,14 @@ public class Robot extends IterativeRobot {
     	SmartDashboard.putNumber("kI", kI);
     	SmartDashboard.putNumber("kD", kD);
     	
+    	try {
+			fw.write(Double.toString(current));
+			fw.write(","+Double.toString(voltage));
+			fw.write(","+Double.toString(rpm));
+			fw.write(","+Long.toString(time)+"\n");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
     }
     
     /**
