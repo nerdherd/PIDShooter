@@ -89,29 +89,31 @@ public class Robot extends IterativeRobot {
 		}	else	{
 			shooter.set(0);
 		}
+    	
     	current = pdp.getCurrent(1);
     	time = System.currentTimeMillis()-startTime;
     	rpm = enc.getRate();
     	voltage = pdp.getVoltage();
     	
     	if (joy.getRawButton(7)) {
-    		kP += 0.1;
+    		kP += 0.0001;
     	}
     	if (joy.getRawButton(8)) {
-    		kP -= 0.1;
+    		kP -= 0.0001;
     	}
     	if (joy.getRawButton(9)) {
-    		kI += 0.1;
+    		kI += 0.000001;
     	}
     	if (joy.getRawButton(10)) {
-    		kI -= 0.1;
+    		kI -= 0.000001;
     	}
     	if (joy.getRawButton(11)) {
-    		kD += 0.1;
+    		kD += 0.001;
     	}
     	if (joy.getRawButton(12)) {
-    		kD -= 0.1;
+    		kD -= 0.001;
     	}
+    	
     	SmartDashboard.putNumber("kP", kP);
     	SmartDashboard.putNumber("kI", kI);
     	SmartDashboard.putNumber("kD", kD);
