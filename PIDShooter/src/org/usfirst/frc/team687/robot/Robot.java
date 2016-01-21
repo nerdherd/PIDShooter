@@ -10,7 +10,6 @@ import java.io.IOException;
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.CANTalon.FeedbackDevice;
 import edu.wpi.first.wpilibj.CANTalon.TalonControlMode;
-import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -35,7 +34,6 @@ public class Robot extends IterativeRobot {
 	long startTime;
 	long time;
 	
-	Encoder enc;
 	CANTalon shooter;
 	Joystick joy;
 	PowerDistributionPanel pdp;
@@ -92,7 +90,7 @@ public class Robot extends IterativeRobot {
     	
     	current = pdp.getCurrent(1);
     	time = System.currentTimeMillis()-startTime;
-    	rpm = enc.getRate();
+    	rpm = shooter.getPulseWidthVelocity();
     	voltage = pdp.getVoltage();
     	
     	if (joy.getRawButton(7)) {
