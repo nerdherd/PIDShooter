@@ -24,7 +24,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Robot extends IterativeRobot {
 
 	// Need to tune these values
-	double kP = 0;
+	double kP = 0.002;
 	double kI = 0;
 	double kD = 0;
 	
@@ -50,9 +50,15 @@ public class Robot extends IterativeRobot {
 		
 		csv = new File("data.csv");
 		try {
-			fw = new FileWriter(csv);
-		} catch (IOException e) {
-			e.printStackTrace();
+			if(csv.createNewFile()) {
+				fw = new FileWriter(csv);
+			} else {
+				SmartDashboard.putString("","File creation failed");
+			}
+			
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
 		//Pick the right sensor
 		shooter.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Relative);
@@ -90,27 +96,26 @@ public class Robot extends IterativeRobot {
     	
     	current = pdp.getCurrent(1);
     	time = System.currentTimeMillis()-startTime;
-    	rpm = shooter.getPulseWidthVelocity();
-    	voltage = pdp.getVoltage();
+    	rpm = shooter.getEncVelocity();
     	
-    	if (joy.getRawButton(7)) {
-    		kP += 0.0001;
-    	}
-    	if (joy.getRawButton(8)) {
-    		kP -= 0.0001;
-    	}
-    	if (joy.getRawButton(9)) {
-    		kI += 0.000001;
-    	}
-    	if (joy.getRawButton(10)) {
-    		kI -= 0.000001;
-    	}
-    	if (joy.getRawButton(11)) {
-    		kD += 0.001;
-    	}
-    	if (joy.getRawButton(12)) {
-    		kD -= 0.001;
-    	}
+//    	if (joy.getRawButton(7)) {
+//    		kP += 0.0001;
+//    	}
+//    	if (joy.getRawButton(8)) {
+//    		kP -= 0.0001;
+//    	}
+//    	if (joy.getRawButton(9)) {
+//    		kI += 0.000001;
+//    	}
+//    	if (joy.getRawButton(10)) {
+//    		kI -= 0.000001;
+//    	}
+//    	if (joy.getRawButton(11)) {
+//    		kD += 0.001;
+//    	}
+//    	if (joy.getRawButton(12)) {
+//    		kD -= 0.001;
+//    	}
     	
     	SmartDashboard.putNumber("kP", kP);
     	SmartDashboard.putNumber("kI", kI);
@@ -118,7 +123,6 @@ public class Robot extends IterativeRobot {
     	
     	try {
 			fw.write(Double.toString(current));
-			fw.write(","+Double.toString(voltage));
 			fw.write(","+Double.toString(rpm));
 			fw.write(","+Long.toString(time)+"\n");
 		} catch (IOException e) {
